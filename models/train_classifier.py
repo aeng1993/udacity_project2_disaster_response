@@ -26,6 +26,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import SGDClassifier
 from sklearn.svm import LinearSVC
 
+from CountLength import CountLength
 import pickle
 
 def load_data(database_filepath):
@@ -61,23 +62,13 @@ def tokenize(text):
     return tokens
 
 
-
-class CountLength(BaseEstimator, TransformerMixin):
-    '''
-    Define the CountLength class to pass into the machine learning pipeline
-    This is used to count the number of sentence in a document (message), which will be used as a feature.
-    '''
-    def length_count(self, text):
-        return len(text)
-
-    def fit(self, x, y=None):
-        return self
-
-    def transform(self, X):
-        X_tagged = pd.Series(X).apply(self.length_count)
-        return pd.DataFrame(X_tagged)
-
 def build_model():
+    '''
+    Build the machine learning model pipeline with GridSearchCV to optimize parameters.
+    Tfidf and number of sentences are used as model features.
+    OUTPUT:
+    The machine learning model pipeline
+    '''
     pipeline = Pipeline([
         ('feature', FeatureUnion([
                                     ('text_pipeline', Pipeline([
@@ -99,14 +90,19 @@ def build_model():
     
     parameters = {
                  #'clf__estimator__n_estimators': [50, 100],
-                  'clf__estimator__max_features': [0.05, 0.08]
+                  'clf__estimator__max_features': ['auto', 0.05]
                  }
     
-    cv = GridSearchCV(pipeline, param_grid=parameters, scoring='f1_weighted')
+    cv = GridSearchCV(pipeline, param_grid=parameters, cv=2, scoring='f1_weighted')
     
     return cv
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    This function evaluate the model performance on test set, 
+    and print the classfication report (precision, recall, f1 score, support)
+    '''
+    
     Y_pred = model.predict(X_test)
     print(classification_report(Y_test, Y_pred, target_names=category_names))
 
