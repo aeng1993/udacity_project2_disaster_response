@@ -38,14 +38,37 @@ model = joblib.load("../models/classifier.pkl")
 @app.route('/index')
 def index():
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
-    genre_counts = df.groupby('genre').count()['message']
-    genre_names = list(genre_counts.index)
+    
+    # count the number of messages by each category
+    cat_counts = df.iloc[:,4:].sum(axis=0)
+    cat_names = list(cat_counts.index)
+    
+    # count the number of messages by each genre    
+    genre_counts = df.groupby('genre').count()['message']                                                       
+    genre_names = list(genre_counts.index)                
     
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
+            'data': [
+                Bar(
+                    x=cat_names,
+                    y=cat_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Number of positive messages in each category of the dataset',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Category"
+                }
+            }
+        },
+        
+                {
             'data': [
                 Bar(
                     x=genre_names,
@@ -54,7 +77,7 @@ def index():
             ],
 
             'layout': {
-                'title': 'Distribution of Message Genres',
+                'title': 'Number of messages in each genre',
                 'yaxis': {
                     'title': "Count"
                 },
@@ -65,8 +88,10 @@ def index():
         }
     ]
     
+
+    
     # encode plotly graphs in JSON
-    ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
+    ids = ["figure-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
     
     # render web page with plotly graphs

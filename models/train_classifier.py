@@ -41,7 +41,7 @@ def load_data(database_filepath):
     engine = create_engine('sqlite:///{}'.format(database_filepath))
     df = pd.read_sql('SELECT * FROM Response', engine)
     X = df['message']
-    Y = df.drop(['id','message','original','genre','child_alone'], axis=1)
+    Y = df.drop(['id','message','original','genre'], axis=1)
     cat_name = list(Y.columns)
     return X, Y, cat_name
 
@@ -75,7 +75,6 @@ def build_model():
                                         ('vect', CountVectorizer(max_df=0.7,
                                                                  min_df=15,
                                                                  ngram_range=(1,1),
-                                                                 stop_words='english',
                                                                  tokenizer=tokenize)),
                                         ('tfidf', TfidfTransformer())])),
                                     ('count_length', CountLength()),
