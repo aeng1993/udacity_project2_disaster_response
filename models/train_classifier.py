@@ -107,10 +107,18 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    '''
+    Save the model as a pickle file to be used for the web app
+    '''
+    
     pickle.dump(model, open(model_filepath, 'wb'))
 
 
 def main():
+    '''
+    The main function that runs the model pipeline - load data, then build, train, evaluate, and save model.
+    '''
+    
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))

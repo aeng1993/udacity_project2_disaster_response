@@ -15,6 +15,13 @@ from CountLength import CountLength
 app = Flask(__name__)
 
 def tokenize(text):
+    '''
+    This function is a pre-processing step to tokenize a message
+    INPUT:
+    A raw message
+    OUTPUT:
+    Tokens after lemmatization and conversion to all lower-case
+    '''
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -31,7 +38,6 @@ df = pd.read_sql_table('Response', engine)
 
 # load model
 model = joblib.load("../models/classifier.pkl")
-
 
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
